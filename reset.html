@@ -1,0 +1,18 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nuova password – Backstage PR</title>
+<style>body{font:17px/1.5 -apple-system,system-ui,sans-serif;max-width:420px;margin:48px auto;padding:0 20px;color:#1a1a1a;background:#fff}h1{font-size:26px}input,button{width:100%;box-sizing:border-box;font-size:17px;padding:14px;border-radius:10px;border:1px solid #bbb;margin:6px 0}button{background:#c9a24a;border:0;font-weight:600;color:#000}#msg{margin-top:12px}@media(prefers-color-scheme:dark){body{background:#111;color:#ddd}input{background:#222;color:#fff;border-color:#444}}</style></head><body>
+<h1>Scegli una nuova password</h1>
+<div id="box"><input id="p1" type="password" placeholder="Nuova password (almeno 8 caratteri)" autocomplete="new-password"><input id="p2" type="password" placeholder="Ripeti la password" autocomplete="new-password"><button id="go">Salva password</button></div>
+<p id="msg"></p>
+<script>
+var URL_="https://agxfdlpibyaieqlthpwd.supabase.co",KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFneGZkbHBpYnlhaWVxbHRocHdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NDkwNjMsImV4cCI6MjEwOTIyNTA2M30.TQl8n2pzS54ewOD0z2NR4lZjNoCNQstnqXvFUp_MoK8";
+var h=new URLSearchParams(location.hash.slice(1)),tok=h.get("access_token"),msg=document.getElementById("msg");
+if(!tok||h.get("type")!=="recovery"){document.getElementById("box").style.display="none";msg.textContent=h.get("error_description")?"Il link non è più valido. Richiedi un nuovo link dall'app.":"Apri questa pagina dal link ricevuto per email."}
+document.getElementById("go").onclick=function(){var a=p1.value,b=p2.value;
+if(a.length<8){msg.textContent="Almeno 8 caratteri.";return}
+if(a!==b){msg.textContent="Le password non coincidono.";return}
+msg.textContent="Attendi…";
+fetch(URL_+"/auth/v1/user",{method:"PUT",headers:{apikey:KEY,Authorization:"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({password:a})})
+.then(function(r){return r.json().then(function(j){return[r.ok,j]})})
+.then(function(x){if(x[0]){document.getElementById("box").style.display="none";msg.textContent="Fatto! Ora torna nell'app ed entra con la nuova password."}else{msg.textContent=x[1].msg||x[1].message||"Non sono riuscito a salvare. Richiedi un nuovo link."}})
+.catch(function(){msg.textContent="Errore di rete, riprova."})};
+</script></body></html>
